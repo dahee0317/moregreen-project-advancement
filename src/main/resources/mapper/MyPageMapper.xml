@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="site.moregreen.basic.myPage.MyPageMapper">
+
+	
+	<resultMap id="selectFundingListMap" type="FundingDto">
+	  <result property="f_num" column="f_num"/>
+	  <result property="f_title" column="f_title"/>
+	  <result property="f_content" column="f_content"/>
+	  <result property="f_days" column="f_days"/>
+	  <result property="f_enddate" column="f_enddate"/>
+	  <result property="f_target" column="f_target"/>
+	  <result property="f_totalmoney" column="f_totalmoney"/>
+	  <result property="f_rate" column="f_rate"/>
+	  <result property="f_status" column="f_status"/>
+	  <result property="f_reward" column="f_reward"/>
+	  <result property="f_price" column="f_price"/>
+	  <result property="f_bname" column="f_bname"/>
+	  <result property="f_bnum" column="f_bnum"/>
+	  <result property="m_num" column="member_m_num"/>
+	  <result property="m_id" column="m_id"/>
+	  <result property="p_num" column="p_num"/>
+	  <result property="p_date" column="p_date"/>
+	  <result property="p_payment" column="p_payment"/>
+	  <result property="f_regdate" column="f_regdate"/>
+	  <result property="l_count" column="l_count"/>
+	  <collection property="files" ofType="UploadDto">
+	    <id property="upload_no" column="inum"/> <!-- column은 DB의 column 이름, property는 DTO의 명칭  -->
+	    <result property="i_num" column="i_num"/>
+	    <result property="filename" column="filename"/>
+	    <result property="uuid" column="uuid"/>
+	    <result property="f_num" column="f_num"/>
+	    <result property="i_type" column="i_type"/>
+	  </collection>
+	</resultMap>
+	
+	<resultMap id="selectPurchaseListMap" type="PurchaseDto">
+	  <result property="f_num" column="f_num"/>
+	  <result property="f_title" column="f_title"/>
+	  <result property="f_price" column="f_price"/>
+	  <result property="f_enddate" column="f_enddate"/>
+	  <result property="f_reward" column="f_reward"/>
+	  <result property="p_num" column="p_num"/>
+	  <result property="p_date" column="p_date"/>
+	  <result property="p_payment" column="p_payment"/>
+	  <result property="p_method" column="p_method"/>
+	  <result property="p_amount" column="p_amount"/>
+	  <result property="p_total" column="p_total"/>
+	  <result property="p_tid" column="p_tid"/>
+	  <result property="d_name" column="d_name"/>
+	  <result property="d_phone" column="d_phone"/>
+	  <result property="d_zipcode" column="d_zipcode"/>
+	  <result property="d_addr" column="d_addr"/>
+	  <result property="d_detailaddr" column="d_detailaddr"/>
+	</resultMap>
+
+	<select id="selectFuningLikeList" parameterType="site.moregreen.basic.util.Criteria" resultMap="selectFundingListMap"> 
+		
+		select	f.f_num,
+				f.f_title,
+				f.f_rate,
+				f.f_bname,
+				f.f_enddate,
+				i.i_num as i_num,
+			    i.i_name as filename,
+			    i.i_uuid as uuid
+		from (select *
+			  from image
+			  where (funding_f_num, i_num) in (select r.*
+											   from (select funding_f_num, min(i_num) as i_num
+													 from image
+													 where i_type = 1
+													 group by funding_f_num) as r) )as i
+		inner join likefunding l 
+		on l.funding_f_num = i.funding_f_num 
+		inner join funding f 
+		on l.funding_f_num = f.f_num
+		where l.member_m_num = #{m_num}
+		order by l.l_num desc
+		limit #{pageStart}, #{amount}		
+		
+	</select>
+		
+	<select id="selectTotal" parameterType="site.moregreen.basic.util.Criteria" resultType="int">
+
+		select count(*) as total
+		from likefunding
+		where member_m_num = #{m_num}
+	    
+	</select>
+	
+	<select id="selectPurchaseTotal" parameterType="site.moregreen.basic.util.Criteria" resultType="int">
+
+		select count(*) as total
+		from purchase
+		where member_m_num = #{m_num}
+	    
+	</select>
+	
+	<select id="selectMyProjectTotal" parameterType="site.moregreen.basic.util.Criteria" resultType="int">
+
+		select count(*) as total
+		from funding
+		where member_m_num = #{m_num}
+	    
+	</select>
+		
+	<select id="selectMyPurchaseList" parameterType="site.moregreen.basic.util.Criteria" resultMap="selectFundingListMap">
+	
+		select f.f_num,
+			   f.f_title,
+			   f.f_bname,
+			   f.f_status,
+			   p.p_num,
+			   p.p_date,
+			   p.p_payment,
+			   i.i_num as i_num,
+			   i.i_name as filename,
+			   i.i_uuid as uuid
+		from (select *
+			  from image
+			  where (funding_f_num, i_num) in (select r.*
+											   from (select funding_f_num, min(i_num) as i_num
+													 from image
+													 where i_type = 1
+													 group by funding_f_num) as r) )as i
+		inner join purchase p 
+		on p.funding_f_num = i.funding_f_num
+		left outer join funding f
+		on p.funding_f_num = f.f_num
+		where p.member_m_num = #{m_num} 
+		order by p.p_num desc
+		limit #{pageStart}, #{amount}
+	
+	</select>
+	
+	
+	<select id="selectMyPurchaseDetail" parameterType="site.moregreen.basic.command.PurchaseDto" resultType="PurchaseDto">
+
+		select f.f_title,
+			   f.f_num,
+			   f.f_enddate,
+			   f.f_price,
+			   f.f_reward,
+			   p.p_num,
+			   p.p_amount,
+			   p.p_method,
+			   p.p_date,
+			   p.p_total,
+			   p.p_tid,
+			   p.p_payment,
+			   d.d_name,
+			   d.d_phone,
+			   d.d_zipcode,
+		   	   d.d_addr,
+		  	   d.d_detailaddr
+		from purchase p 
+		inner join funding f
+		on p.funding_f_num = f.f_num
+		inner join delivery d
+		on p.delivery_d_num = d.d_num
+		where p.member_m_num = #{m_num}
+		and p.p_num = #{p_num}
+		order by p.p_num desc
+		
+	</select>  
+	
+
+	<select id="selectMyProjectList" parameterType="site.moregreen.basic.util.Criteria" resultMap="selectFundingListMap"> 
+		
+		select	f.f_num,
+				f.f_title,
+				f.f_price,
+				f.f_bname,
+				f.f_rate,
+				f.f_regdate,
+				f.f_status,
+				i.i_num as i_num,
+			    i.i_name as filename,
+			    i.i_uuid as uuid
+		from (select *
+			  from image
+			  where (funding_f_num, i_num) in (select r.*
+											   from (select funding_f_num, min(i_num) as i_num
+													 from image
+													 where i_type = 1
+													 group by funding_f_num) as r) )as i
+		inner join funding f 
+		on f.f_num = i.funding_f_num 
+		where f.member_m_num = #{m_num}
+	  	order by f.f_num desc
+	  	limit #{pageStart}, #{amount}
+	
+	</select>	
+	
+</mapper>

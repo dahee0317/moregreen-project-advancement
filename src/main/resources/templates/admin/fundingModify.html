@@ -1,0 +1,335 @@
+<!--
+=========================================================
+* Material Dashboard 2 - v3.0.4
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/material-dashboard
+* Copyright 2022 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://www.creative-tim.com/license)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/include/layout :: setContent( ~{:: .container-fluid}  ) }">
+    
+<style>
+
+#container {
+    width: 1000px;
+    margin: 20px auto;
+}
+.ck-editor__editable[role="textbox"] {
+    /* editing area */
+    min-height: 200px;
+}
+.ck-content .image {
+    /* block images */
+    max-width: 80%;
+    margin: 20px auto;
+}
+
+</style>
+    
+    
+   <div class="container-fluid py-4">
+
+  	 <div class="container">
+   
+
+		<form action="modifyFunding" method="post" th:each="dto : ${fundingList}">
+			<div class="col-md-12 mb-lg-0 mb-4">
+                 <div class="card mt-4 mb-2">
+                   <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+
+                       <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                           <h2 class="text-white text-capitalize ps-3">펀딩 수정</h2>
+                       </div>
+                   </div>
+			  <div class="full_collum collum">
+                            <ul>
+                                <li class="collum_tit">
+                                    <span class="showtoggle minus"></span>
+                                    <ul>
+                                        <li>
+                                            <table cellpadding="0" cellspacing="0" class="board_basic_view" width="100%;">
+                                                <tr>
+                                                    <th>번호</th>
+                                                    <td colspan="5">
+                                                        <input id="f_num" name="f_num" type="text" th:value="${dto.f_num}" readonly>
+                                                      
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>펀딩 명칭</th>
+                                                    <td colspan="5">
+                                                       <input id="f_title" name="f_title"  type="text" class="inputw99p" th:value="${dto.f_title}">
+                                                    </td>
+                                                </tr>
+                                                  <tr>
+                                                    <th>펀딩 기간</th>
+                                                    <td colspan="5">
+                                                        <input  type="text" id="f_days" name="f_days" th:value="${dto.f_days}" readonly>
+                                                    </td>
+                                                </tr>
+                                                  <tr>
+                                                    <th>마감일자</th>
+                                                    <td colspan="5">
+                                                        <input type="text" id="f_enddate" name="f_enddate" th:value="${dto.f_enddate}" readonly>
+                                                    </td>
+                                                </tr>
+                                                  <tr>
+                                                    <th>펀딩률</th>
+                                                    <td colspan="5">
+                                                        <input type="text" id="f_rate" th:value="${dto.f_rate} +'%'" readonly>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>신청자ID</th>
+                                                    <td>
+                                                       <input type="text"  id="m_id" th:value="${dto.m_id}" readonly>
+                                                       <span class="valid"></span>
+                                                    </td>
+                                                </tr>
+                                                  <tr>
+                                                    <th>상호명</th>
+                                                    <td colspan="10">
+                                                        <input type="text" class="inputw99p" id="f_bname" th:value="${dto.f_bname}" readonly>
+                                                    </td>
+                                                </tr>
+                                                  <tr>
+                                                    <th>목표 금액</th>
+                                                    <td colspan="5">
+                                                        <input type="text" id="f_target" th:value="${dto.f_target} + '원'" readonly>
+                                                    </td>
+                                                </tr>
+                                                  <tr>
+                                                    <th>현재 금액</th>
+                                                    <td colspan="5">
+                                                        <input type="text" id="f_totalmoney" th:value="${dto.f_totalmoney} + '원'" readonly>
+                                                    </td>
+                                                </tr>
+                                                  <tr>
+                                                    <th>리워드 명칭</th>
+                                                    <td colspan="5">
+                                                        <input type="text" id="f_reward" th:value="${dto.f_reward}" readonly>
+                                                    </td>
+                                                </tr>
+                                                  <tr>
+                                                    <th>리워드 금액</th>
+                                                    <td colspan="5">
+                                                        <input type="text" id="f_price" th:value="${dto.f_price} + '원'" readonly>
+                                                    </td>
+                                                </tr>
+                                        		<tr>
+                                                    <th>사업자 등록번호</th>
+                                                    <td colspan="10">
+                                                        <input type="text" class="inputw99p" id="f_bnum" th:value="${dto.f_bnum}" readonly>
+                                                    </td>
+                                                </tr>
+                                                <tr> 
+                                                    <th>사업자 등록증</th>
+                                                    <td colspan="3">
+                                                        <div class="filebox preview-image">
+                                                          <th:block th:each="file : ${dto.files}" >
+											                  <th:block th:if="${file.i_type == 0}">
+											                     <img th:src="@{'/upload/' + ${file.uuid} + '_' + ${file.filename}}" alt="#" style="height:500px">
+											                  </th:block>
+					              						  </th:block>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr> 
+                                                    <th>대표사진</th>
+                                                    <td colspan="3">
+                                                        <div class="filebox preview-image">
+                                                          <th:block th:each="file : ${dto.files}">
+											                  <th:block th:if="${file.i_type == 1}">
+											                     <img th:src="@{'/upload/main_' + ${file.uuid} + '_' + ${file.filename}}" alt="#">
+											                  </th:block>
+										                 </th:block>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr> 
+                                                    <th>내용사진</th>
+                                                    <td colspan="3">
+                                                       <div class="filebox preview-image">
+                                                         <th:block th:each="file : ${dto.files}">
+											                  <th:block th:if="${file.i_type == 2}">
+											                     <img th:src="@{'/upload/content_' + ${file.uuid} + '_' + ${file.filename}}" alt="#">
+											                  </th:block>
+											             </th:block>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>내용</th>
+                                                    <td colspan="5">
+											            <div class="col-75" style="overflow: auto; height: 300px;">
+											               <textarea name="f_content" id="editor">[[${dto.f_content}]]</textarea>
+											              
+											            </div>
+                                                    </td>
+                                                </tr>
+                                                
+                                            </table>
+                                            <div class="btn_area">
+		                                         <div class="row">
+			                                       <button type="submit" class="btn btn-success" style="width: auto; margin: auto;">수정하기</button>
+			                                    </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                  		</div>
+                  	</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</th:block>
+<script src="https://cdn.ckeditor.com/ckeditor5/35.1.0/super-build/ckeditor.js"></script>
+<script th:inline="javascript">
+
+//This sample still does not showcase all CKEditor 5 features (!)
+// Visit https://ckeditor.com/docs/ckeditor5/latest/features/index.html to browse all the features.
+CKEDITOR.ClassicEditor.create(document.getElementById("editor"), {
+    // https://ckeditor.com/docs/ckeditor5/latest/features/toolbar/toolbar.html#extended-toolbar-configuration-format
+    toolbar: {
+        items: [
+            'exportPDF','exportWord', '|',
+            'findAndReplace', 'selectAll', '|',
+            'heading', '|',
+            'bold', 'italic', 'strikethrough', 'underline', '|',
+            'numberedList', 'todoList', '|',
+            'outdent', 'indent', '|',
+            'undo', 'redo',
+            '-',
+            'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight', '|',
+            'alignment', '|',
+            'link', 'insertImage', 'blockQuote', 'mediaEmbed', '|',
+            'specialCharacters', 'horizontalLine', 'pageBreak', '|',
+            'textPartLanguage', '|',
+            'sourceEditing'
+        ],
+        shouldNotGroupWhenFull: true
+    },
+    // Changing the language of the interface requires loading the language file using the <script> tag.
+    language: 'ko',
+    
+    list: {
+        properties: {
+            styles: true,
+            startIndex: true,
+            reversed: true
+        }
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/headings.html#configuration
+    heading: {
+        options: [
+            { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+            { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+            { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+            { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+            { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' },
+            { model: 'heading5', view: 'h5', title: 'Heading 5', class: 'ck-heading_heading5' },
+            { model: 'heading6', view: 'h6', title: 'Heading 6', class: 'ck-heading_heading6' }
+        ]
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/editor-placeholder.html#using-the-editor-configuration
+    placeholder: '내용을 입력하세요',
+    // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-family-feature
+    fontFamily: {
+        options: [
+            'default',
+            'Arial, Helvetica, sans-serif',
+            'Courier New, Courier, monospace',
+            'Georgia, serif',
+            'Lucida Sans Unicode, Lucida Grande, sans-serif',
+            'Tahoma, Geneva, sans-serif',
+            'Times New Roman, Times, serif',
+            'Trebuchet MS, Helvetica, sans-serif',
+            'Verdana, Geneva, sans-serif',
+            '궁서체',
+    		 '바탕',
+    		 '돋움'
+        ],
+        supportAllValues: true
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-size-feature
+    fontSize: {
+        options: [ 10, 12, 14, 'default', 18, 20, 22 ],
+        supportAllValues: true
+    },
+    // Be careful with the setting below. It instructs CKEditor to accept ALL HTML markup.
+    // https://ckeditor.com/docs/ckeditor5/latest/features/general-html-support.html#enabling-all-html-features
+    htmlSupport: {
+        allow: [
+            {
+                name: /.*/,
+                attributes: true,
+                classes: true,
+                styles: true
+            }
+        ]
+    },
+    // Be careful with enabling previews
+    // https://ckeditor.com/docs/ckeditor5/latest/features/html-embed.html#content-previews
+    htmlEmbed: {
+        showPreviews: true
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/link.html#custom-link-attributes-decorators
+    link: {
+        decorators: {
+            addTargetToExternalLinks: true,
+            defaultProtocol: 'https://',
+            toggleDownloadable: {
+                mode: 'manual',
+                label: 'Downloadable',
+                attributes: {
+                    download: 'file'
+                }
+            }
+        }
+    },
+    // https://ckeditor.com/docs/ckeditor5/latest/features/mentions.html#configuration
+    // The "super-build" contains more premium features that require additional configuration, disable them below.
+    // Do not turn them on unless you read the documentation and know how to configure them and setup the editor.
+    removePlugins: [
+        // These two are commercial, but you can try them out without registering to a trial.
+        // 'ExportPdf',
+        // 'ExportWord',
+        'CKBox',
+        'CKFinder',
+        'EasyImage',
+        // This sample uses the Base64UploadAdapter to handle image uploads as it requires no configuration.
+        // https://ckeditor.com/docs/ckeditor5/latest/features/images/image-upload/base64-upload-adapter.html
+        // Storing images as Base64 is usually a very bad idea.
+        // Replace it on production website with other solutions:
+        // https://ckeditor.com/docs/ckeditor5/latest/features/images/image-upload/image-upload.html
+        // 'Base64UploadAdapter',
+        'RealTimeCollaborativeComments',
+        'RealTimeCollaborativeTrackChanges',
+        'RealTimeCollaborativeRevisionHistory',
+        'PresenceList',
+        'Comments',
+        'TrackChanges',
+        'TrackChangesData',
+        'RevisionHistory',
+        'Pagination',
+        'WProofreader',
+        // Careful, with the Mathtype plugin CKEditor will not load when loading this sample
+        // from a local file system (file://) - load this site via HTTP server if you enable MathType
+        'MathType'
+    ]
+});
+
+
+</script>
+
+</html>
